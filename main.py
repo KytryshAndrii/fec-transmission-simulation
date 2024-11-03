@@ -5,9 +5,14 @@ from Utils.HelperFunctions import *
 from Utils.Convolutional import *
 def main():
 
+
+
     """Kod Hamminga przykład"""
     """
     slowo = "gramy"
+    
+    
+    
     slowocoded = Hamming.ZakodujSlowoHamming(slowo)
     slowodecoded = Hamming.DekodujSlowoHamming(slowocoded,True)
 
