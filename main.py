@@ -16,8 +16,6 @@ def main():
     print(slowodecoded)
     """
 
-
-
     """Kod splotowy przykład"""
     """Kod splotowy przy naszych ustawieniach pozwala naprawić 2 błędy jeżeli sie pojawią w bitpacku"""
     """
@@ -29,20 +27,6 @@ def main():
     print(slowocoded)
     print(slowoDecoded)
     """
-
-
-
-    """Kod Reeda Solomona przykład"""
-    """
-    slowo = "gramy"
-    symbole = 10
-    slowokoded = ReedSolomon.ZakodujReedSolomon(slowo,symbole)
-    slowodekoded = ReedSolomon.DekodujReedSolomon(slowokoded,symbole,True)
-    print(slowo)
-    print(slowokoded)
-    print(slowodekoded)
-    """
-
 
     """Kodowanie Hamminga z kanalem o modelu BSC"""
     """Kod hamminga pozwala nam naprawic 1 blad, a jezeli jest wiecej to lipa"""
@@ -58,11 +42,12 @@ def main():
     print(slowoCodedAndNoise)
     print(errorLista)
     slowodecoded = Hamming.DekodujSlowoHamming(slowoCodedAndNoise,True)
+    print(slowodecoded)
     """
 
     """Kodowanie Hamminga z kanałem o modelu GilbertElliot"""
     """
-    slowo = "gramy"
+    slowo = "Gramy w sabotarzysta"
     print(slowo)
     slowoCoded = Hamming.ZakodujSlowoHamming(slowo)
     print(slowoCoded)
@@ -76,17 +61,19 @@ def main():
 
     """Kodowanie Splotowe z kanałem BSC"""
 
+    """
     slowo = "Widzowie tworzymy razem historie"
     slowoCoded = ConvolutionalCoder.Zakoduj(slowo)
     print(slowoCoded)
-    slowoCodedAndNoise, errorLista = bsc_channel_transmission(slowoCoded, 0.01)
+    slowoCodedAndNoise, errorLista = bsc_channel_transmission_splot(slowoCoded, 0.05)
     slowoDecoded = ConvolutionalCoder.Dekoduj(slowoCodedAndNoise,10, True)
     print(slowoDecoded)
     print(errorLista)
+    """
 
 
     "Kodowanie Splotowe z kanałem GilbertElliot"
-    """
+
     slowo = "gramy"
     print(slowo)
     slowoCoded = ConvolutionalCoder.Zakoduj(slowo)
@@ -97,7 +84,7 @@ def main():
     print(errorList)
     slowodecoded = ConvolutionalCoder.Dekoduj(slowoCodedAndNoise, 10,True)
     print(slowodecoded)
-    """
+
 
 
 if __name__ == '__main__':
