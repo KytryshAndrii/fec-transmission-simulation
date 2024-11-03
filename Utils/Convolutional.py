@@ -38,7 +38,7 @@ class ConvolutionalCoder:
         return decoded_bits.tolist()
 
     @staticmethod
-    def Zakoduj(slowo):
+    def CodeData(slowo):
         """
         Funkcja kodująca całe słowo (tablicę bitów) przy użyciu kodera splotowego.
         :param slowo: Tablica bitów reprezentująca słowo (np. wynik SlowoNaTablice)
@@ -49,7 +49,7 @@ class ConvolutionalCoder:
         return encoded_bits
 
     @staticmethod
-    def Dekoduj(zakodowaneSlowo, tbDepth, jakoSlowo):
+    def Decode(zakodowaneSlowo, tbDepth, jakoSlowo):
         """
         Funkcja dekodująca zakodowane dane splotowe na pierwotne słowo.
         :param zakodowaneSlowo: Zakodowana tablica bitów

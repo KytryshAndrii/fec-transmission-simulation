@@ -47,7 +47,7 @@ class Hamming:
         return [encoded_data[2], encoded_data[4], encoded_data[5], encoded_data[6]]
 
     @staticmethod
-    def ZakodujSlowoHamming(slowo):
+    def CodeDataHamming(slowo):
         listabit = RozbijSlowoNa4BitoweArraye(slowo)
         listabitencoded = []
         for array in listabit:
@@ -55,7 +55,7 @@ class Hamming:
         return listabitencoded
 
     @staticmethod
-    def DekodujSlowoHamming(slowoCoded,jakoSlowo):
+    def DecodeInputDataHamming(slowoCoded, jakoSlowo):
         slowoDecoded = []
         for i,array in enumerate(slowoCoded):
             slowoDecoded.append(Hamming.__hamming_decode(array,i+1))
