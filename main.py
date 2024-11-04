@@ -5,8 +5,8 @@ from Utils.HelperFunctions import *
 from Utils.Convolutional import *
 def main():
 
-    channelModel = int(input("Enter the channel model:      (1 - BSC, 2- Gilbert-Elliott"))
-    codingType = int(input("Enter the type of coding:       (1 - Hamming, 2 - Convolutional"))
+    channelModel = int(input("Enter the channel model:      (1 - BSC, 2- Gilbert-Elliott) \n"))
+    codingType = int(input("Enter the type of coding:       (1 - Hamming, 2 - Convolutional) \n"))
     inputData = input("Enter the input data:\n")
 
     if codingType == 1:
