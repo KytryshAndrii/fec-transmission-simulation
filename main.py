@@ -46,7 +46,7 @@ def main():
 
         if codingType == 1:
             channel = GilbertElliottChannel(chanceForBad, chanceForGood, p_err_good, p_err_bad)
-            inputDataCodedAndNoise, errorList = channel.transmit(inputDataCoded)
+            inputDataCodedAndNoise, errorList = channel.transmitHamming(inputDataCoded)
             print(inputDataCodedAndNoise)
             print(errorList)
             inputDataDecoded = Hamming.DecodeInputDataHamming(inputDataCodedAndNoise, True)
@@ -54,7 +54,7 @@ def main():
 
         elif codingType == 2:
             channel = GilbertElliottChannel(chanceForBad, chanceForGood, p_err_good, p_err_bad)
-            inputDataCodedAndNoise, errorList = channel.transmit(inputDataCoded)
+            inputDataCodedAndNoise, errorList = channel.transmitConvolutional(inputDataCoded)
             print(inputDataCodedAndNoise)
             print(errorList)
             inputDataDecoded = ConvolutionalCoder.Decode(inputDataCodedAndNoise, 10, True)
