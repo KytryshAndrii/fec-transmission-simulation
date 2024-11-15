@@ -1,5 +1,5 @@
 #hamming 7-4
-from Utils.HelperFunctions import RozbijSlowoNa4BitoweArraye, Zlacz4BitoweArrayeNaSlowo
+from Utils.HelperFunctions import RozbijSlowoNa4BitoweArraye, Zlacz4BitoweArrayeNaSlowo,splitIntoChunks
 
 class Hamming:
     #KALKULATOR BITOW PARZYSTOSCI ALE NIE UZYWAMY
@@ -54,6 +54,19 @@ class Hamming:
             listabitencoded.append(Hamming.__hamming_encode(array))
         return listabitencoded
 
+
+
+    def CodeDataHammingObraz(obrazData):
+        chunk_size = 4  # Size of each chunk
+        obrazData_chunks = splitIntoChunks(obrazData, chunk_size)  # Split into 4-element chunks
+
+        listabitencoded = []
+        for chunk in obrazData_chunks:
+            encoded_chunk = Hamming.__hamming_encode(chunk)
+            listabitencoded.append(encoded_chunk)
+
+        return listabitencoded
+
     @staticmethod
     def DecodeInputDataHamming(slowoCoded, jakoSlowo):
         slowoDecoded = []
@@ -63,5 +76,10 @@ class Hamming:
             slowopodekode = Zlacz4BitoweArrayeNaSlowo(slowoDecoded)
             return slowopodekode
         else:
-            return slowoCoded
+            return slowoDecoded
+    def DecodeInputDataHammingObraz(slowoCoded):
+        slowoDecoded = []
+        for i,array in enumerate(slowoCoded):
+            slowoDecoded.append(Hamming.__hamming_decode(array,i+1))
+        return slowoDecoded
 

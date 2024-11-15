@@ -79,6 +79,8 @@ def RozbijSlowoNa4BitoweArraye(slowo):
         listabit.append(secondhalf)
     return listabit
 
+def splitIntoChunks(array, chunk_size):
+    return [array[i:i + chunk_size] for i in range(0, len(array), chunk_size)]
 
 # Funkcja do łączenia 4-bitowych tablic z powrotem w słowo
 """
@@ -101,6 +103,7 @@ def Zlacz4BitoweArrayeNaSlowo(array):
         slowo += znak
     return slowo
 
+
 """
 ZŁaczy 8 bitowe array w slowo np
 [0,1,1,1,0,0,0,1],[0,0,0,0,1,1,1,1],[0,0,1,1,0,0,1,1] zamienia na hej
@@ -121,6 +124,32 @@ def Zlacz8BitoweArrayeNaSlowo(array):
     return slowo
 """
 
+
+def split_into_four_parts(lst):
+    """
+    Splits a list into four roughly equal parts.
+
+    Parameters:
+        lst (list): The list to split.
+
+    Returns:
+        list of lists: A list containing four sublists.
+    """
+    # Determine the size of each part
+    n = len(lst)
+    part_size = n // 4
+    remainder = n % 4
+
+    # Distribute remainder across the first few parts if needed
+    parts = []
+    start = 0
+    for i in range(4):
+        extra = 1 if i < remainder else 0
+        end = start + part_size + extra
+        parts.append(lst[start:end])
+        start = end
+
+    return parts
 
 
 
