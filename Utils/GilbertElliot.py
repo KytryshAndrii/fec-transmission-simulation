@@ -39,6 +39,7 @@ class GilbertElliottChannel:
 
             errorsArray.append(errorstemp)
         return receivedArray, errorsArray
+    
     def transmitConvolutional(self, bitsarray):
         receivedArray = []
         errorsArray = []

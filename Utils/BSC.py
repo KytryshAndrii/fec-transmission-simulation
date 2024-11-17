@@ -1,6 +1,6 @@
 import random
 
-def bsc_channel_transmission(bit_list, ber):
+def bsc_channel_transmission_hamming(bit_list, ber):
     """
     Simulate transmission through a BSC channel for each sublist of bits in the list.
 

@@ -66,7 +66,7 @@ def decode_data(data, coding_type, tb_depth, is_image=False):
 # Channel Transmission Handlers
 def transmit_bsc(data, ber, coding_type, is_image=False):
     if coding_type == 1:  # Hamming
-        return bsc_channel_transmission(data, ber)
+        return bsc_channel_transmission_hamming(data, ber)
     elif coding_type == 2:  # Convolutional
         return bsc_channel_transmission_splot(data, ber)
     else:
@@ -168,7 +168,7 @@ def main():
     elif data_type == 2:  # Image data
         image = load_bmp_image("image.bmp")
         decoded_image = process_image_data(image, coding_type, channel_model, channel_params)
-        save_bmp_image(decoded_image, "decoded_image.bmp", image.shape)
+        save_bmp_image(decoded_image, "decoded_image.bmp", decoded_image.shape)
         print("Decoded image saved as 'decoded_image.bmp'")
 
     else:
