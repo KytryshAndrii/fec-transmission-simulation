@@ -46,7 +46,7 @@ def main():
 
         if codingType == 1:
             channel = GilbertElliottChannel(chanceForBad, chanceForGood, p_err_good, p_err_bad)
-            inputDataCodedAndNoise, errorList = channel.transmitHamming(inputDataCoded)
+            inputDataCodedAndNoise, errorList = channel.transmitHamming(-inputDataCoded)
             print(inputDataCodedAndNoise)
             print(errorList)
             inputDataDecoded = Hamming.DecodeInputDataHamming(inputDataCodedAndNoise, True)
