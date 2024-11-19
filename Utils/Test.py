@@ -7,6 +7,7 @@ from Utils.HelperFunctions import *
 from Utils.Convolutional import *
 from PIL import Image
 import multiprocessing as mp
+import pandas as pd
 
 # Utility functions for image handling
 def load_bmp_image(file_path):
@@ -90,12 +91,12 @@ def process_text_data(input_data, coding_type, channel_model, channel_params):
     if channel_model == 1:  # BSC
         transmitted_data, _, actual_ber_observed = transmit_bsc(encoded_data, channel_params, coding_type)
     elif channel_model == 2:  # Gilbert-Elliott
-        transmitted_data, _ = transmit_gilbert_elliott(encoded_data, channel_params, coding_type)
+        transmitted_data, _, actual_ber_observed = transmit_gilbert_elliott(encoded_data, channel_params, coding_type)
     else:
         raise ValueError("Invalid channel model selected")
 
     decoded_data = decode_data(transmitted_data, coding_type, tb_depth=3)
-    return decoded_data
+    return decoded_data, actual_ber_observed
 
 
 def decode_image_part(args):
@@ -134,51 +135,79 @@ def process_image_data(image, coding_type, channel_model, channel_params):
     final_image = merge_image(decoded_parts)  # Merge parts back into a single image
     return final_image
 
+def calculate_number_of_errors(decoded_data, input_data):
+    number_of_errors = 0
+    for i in range(len(decoded_data)):
+        if decoded_data[i] != input_data[i]:
+            number_of_errors += 1
+    return number_of_errors
+
 
 def main():
     print("Welcome to the Data Transmission Simulator!")
 
     # User inputs
-    data_type = int(input("Enter data type: 1 - Text, 2 - Image\n"))
-    channel_model = int(input("Enter the channel model: (1 - BSC, 2 - Gilbert-Elliott)\n"))
+    data_type = 1
+    channel_model = 1
     coding_type = int(input("Enter the type of coding: (1 - Hamming, 2 - Convolutional)\n"))
+    input_data = input("Enter the input text data:\n")
+    number_of_tests = int (input("Enter the number of tests:\n"))
 
-    # Channel parameters
-    if channel_model == 1:
-        ber = float(input("Enter bit error rate: "))
+    test_number = 1
+
+    df = pd.DataFrame({})
+
+    while test_number <= number_of_tests:
+        ber = 1
         channel_params = ber
-    elif channel_model == 2:
-        chance_good = float(input("Enter the chance for returning to good state: "))
-        chance_bad = float(input("Enter the chance for going into bad state: "))
-        p_err_good = float(input("Enter the probability for error in good state: "))
-        p_err_bad = float(input("Enter the probability for error in bad state: "))
-        channel_params = (chance_bad, chance_good, p_err_good, p_err_bad)
+        entered_ber_list = []
+        actual_ber_list = []
+        number_of_errors_list = []
+        separator_list = []
+
+        while ber >= 0:
+
+            decoded_data, actual_ber_observed= process_text_data(input_data, coding_type, channel_model, channel_params)
+            print("Decoded Text Data:")
+            print(decoded_data)
+            print("Actual number of errors: ", calculate_number_of_errors(decoded_data, input_data), "\n")
+            number_of_errors_list.append(calculate_number_of_errors(decoded_data, input_data))
+            entered_ber_list.append(ber)
+            if coding_type == 1:
+                actual_ber_list.append(actual_ber_observed)
+            elif coding_type == 2:
+                actual_ber_list.append(actual_ber_observed)
+            else:
+                print("Invalid coding type selected")
+                return
+            separator_list.append(" ")
+            ber -= 0.005
+            channel_params = ber
+
+        entered_ber_column_name = f"Entered BER test {test_number}"
+        actual_ber_column_name = f"Actual BER test {test_number}"
+        number_of_errors_column_name = f"Number of errors test {test_number}"
+        n=f"Test {test_number}"
+
+        df[n] = separator_list
+        df[entered_ber_column_name] = entered_ber_list
+        df[actual_ber_column_name] = actual_ber_list
+        df[number_of_errors_column_name] = number_of_errors_list
+
+
+        test_number += 1
+
+    if coding_type == 1:
+        df.to_excel("Statystyki_Hamming_Projekt_NiDUC.xlsx", index = False)
+    elif coding_type == 2:
+        df.to_excel("Statystyki_Convolutional_Projekt_NiDUC.xlsx", index=False)
     else:
-        print("Invalid channel model")
-        return
-
-    start_time = time.time()
-
-    if data_type == 1:  # Text data
-        input_data = input("Enter the input text data:\n")
-        decoded_data = process_text_data(input_data, coding_type, channel_model, channel_params)
-        print("Decoded Text Data:")
-        print(decoded_data)
+        raise ValueError("Invalid coding type selected")
 
 
-    elif data_type == 2:  # Image data
-        image = load_bmp_image("image.bmp")
-        decoded_image = process_image_data(image, coding_type, channel_model, channel_params)
-        save_bmp_image(decoded_image, "decoded_image.bmp", decoded_image.shape)
-        print("Decoded image saved as 'decoded_image.bmp'")
-
-    else:
-        print("Invalid data type selected")
-        return
-
-
-    elapsed_time = time.time() - start_time
-    print(f"\nElapsed time: {elapsed_time:.2f} seconds")
+    #start_time = time.time()
+    #elapsed_time = time.time() - start_time
+    #print(f"\nElapsed time: {elapsed_time:.2f} seconds")
 
 
 if __name__ == '__main__':
