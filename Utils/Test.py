@@ -89,14 +89,14 @@ def process_text_data(input_data, coding_type, channel_model, channel_params):
     encoded_data = encode_data(input_data, coding_type)
 
     if channel_model == 1:  # BSC
-        transmitted_data, _, actual_ber_observed = transmit_bsc(encoded_data, channel_params, coding_type)
+        transmitted_data, error_count, actual_ber_observed = transmit_bsc(encoded_data, channel_params, coding_type)
     elif channel_model == 2:  # Gilbert-Elliott
-        transmitted_data, _, actual_ber_observed = transmit_gilbert_elliott(encoded_data, channel_params, coding_type)
+        transmitted_data, error_count, actual_ber_observed = transmit_gilbert_elliott(encoded_data, channel_params, coding_type)
     else:
         raise ValueError("Invalid channel model selected")
 
     decoded_data = decode_data(transmitted_data, coding_type, tb_depth=3)
-    return decoded_data, actual_ber_observed
+    return decoded_data, error_count, actual_ber_observed
 
 
 def decode_image_part(args):
@@ -158,41 +158,55 @@ def main():
     df = pd.DataFrame({})
 
     while test_number <= number_of_tests:
-        ber = 1
+        ber = 0
         channel_params = ber
         entered_ber_list = []
         actual_ber_list = []
         number_of_errors_list = []
         separator_list = []
+        number_of_detected_errors_list = []
+        number_of_corrected_errors_list = []
 
-        while ber >= 0:
+        while ber <= 0.02:
 
-            decoded_data, actual_ber_observed= process_text_data(input_data, coding_type, channel_model, channel_params)
+            decoded_data, error_count, actual_ber_observed= process_text_data(input_data, coding_type, channel_model, channel_params)
             print("Decoded Text Data:")
             print(decoded_data)
             print("Actual number of errors: ", calculate_number_of_errors(decoded_data, input_data), "\n")
-            number_of_errors_list.append(calculate_number_of_errors(decoded_data, input_data))
+            number_of_errors = calculate_number_of_errors(decoded_data, input_data)
+            number_of_errors_list.append(number_of_errors)
             entered_ber_list.append(ber)
+            print(error_count)
             if coding_type == 1:
                 actual_ber_list.append(actual_ber_observed)
+                number_of_detected_errors_list.append(error_count)
+                number_of_corrected_errors_list.append(error_count-number_of_errors)
             elif coding_type == 2:
                 actual_ber_list.append(actual_ber_observed)
+                number_of_detected_errors_list.append(error_count)
+                number_of_corrected_errors_list.append(error_count - number_of_errors)
             else:
                 print("Invalid coding type selected")
                 return
+
+
             separator_list.append(" ")
-            ber -= 0.005
+            ber += 0.0001
             channel_params = ber
 
         entered_ber_column_name = f"Entered BER test {test_number}"
         actual_ber_column_name = f"Actual BER test {test_number}"
         number_of_errors_column_name = f"Number of errors test {test_number}"
+        number_of_detected_errors_column_name = f"Number of detected errors test {test_number}"
+        number_of_corrected_errors_column_name = f"Number of corrected errors test {test_number}"
         n=f"Test {test_number}"
 
         df[n] = separator_list
         df[entered_ber_column_name] = entered_ber_list
         df[actual_ber_column_name] = actual_ber_list
         df[number_of_errors_column_name] = number_of_errors_list
+        df[number_of_detected_errors_column_name] = number_of_detected_errors_list
+        df[number_of_corrected_errors_column_name] = number_of_corrected_errors_list
 
 
         test_number += 1
