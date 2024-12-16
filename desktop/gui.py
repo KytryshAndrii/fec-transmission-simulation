@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+from PySide6.QtWidgets import QFormLayout
 from PySide6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton,
                                QVBoxLayout, QHBoxLayout, QGridLayout, QComboBox, QFileDialog, QLineEdit)
 from PySide6.QtGui import QPixmap, QImage, QWheelEvent, QMouseEvent, QPainter
@@ -10,7 +11,6 @@ from Utils.GilbertElliot import *
 from Utils.Hamming import *
 from Utils.HelperFunctions import *
 from Utils.Convolutional import *
-
 
 class ZoomableLabel(QLabel):
     def __init__(self):
@@ -107,22 +107,27 @@ class TransmissionSimulator(QWidget):
         image_grid.addWidget(self.additional_image_label, 1, 1)
         main_layout.addLayout(image_grid)
 
+        # Control panel with nested layouts
         control_layout = QVBoxLayout()
+        select_layout = QHBoxLayout()
+
         self.channel_select = QComboBox()
         self.channel_select.addItems(['BSC', 'Gilbert-Elliott'])
-        self.channel_select.currentIndexChanged.connect(self.update_channel_parameters)
-        control_layout.addWidget(QLabel("Select Channel"))
-        control_layout.addWidget(self.channel_select)
-
+        self.channel_select.currentIndexChanged.connect(self.update_input_fields)
         self.coding_select = QComboBox()
         self.coding_select.addItems(['Hamming', 'Convolutional'])
-        control_layout.addWidget(QLabel("Select Coding Type"))
-        control_layout.addWidget(self.coding_select)
 
-        self.param_input = QLineEdit()
-        self.param_input.setPlaceholderText('Enter BER or Gilbert-Elliott params')
-        control_layout.addWidget(QLabel("Set Channel Parameters"))
-        control_layout.addWidget(self.param_input)
+        select_layout.addWidget(QLabel("Select Coding Type"))
+        select_layout.addWidget(self.coding_select)
+        select_layout.addWidget(QLabel("Select Channel"))
+        select_layout.addWidget(self.channel_select)
+        control_layout.addLayout(select_layout)
+
+        # Input fields for BER and Gilbert-Elliott params
+        self.param_form = QFormLayout()
+        self.param_inputs = {}
+        self.create_input_fields()
+        control_layout.addLayout(self.param_form)
 
         self.load_btn = QPushButton('Load Image')
         self.load_btn.clicked.connect(self.load_image)
@@ -135,47 +140,66 @@ class TransmissionSimulator(QWidget):
         main_layout.addLayout(control_layout)
         self.setLayout(main_layout)
 
+    def create_input_fields(self):
+        """Initialize input fields for BER and Gilbert-Elliott parameters."""
+        self.param_inputs = {}  # Clear existing inputs
+        for name in ['BER', 'p_bad', 'p_good', 'e_good', 'e_bad']:
+            input_field = QLineEdit()
+            self.param_inputs[name] = input_field
+
+    def update_input_fields(self):
+        """Update input fields based on the selected channel."""
+        # Clear all existing rows
+        while self.param_form.rowCount() > 0:
+            self.param_form.removeRow(0)
+
+        # Add appropriate input fields
+        if self.channel_select.currentText() == 'BSC':
+            ber_input = QLineEdit()  # Create a new QLineEdit for BER
+            self.param_inputs['BER'] = ber_input  # Store it
+            self.param_form.addRow("BER:", ber_input)
+        else:  # Gilbert-Elliott
+            for param in ['p_bad', 'p_good', 'e_good', 'e_bad']:
+                param_input = QLineEdit()  # Create a new QLineEdit for each parameter
+                self.param_inputs[param] = param_input  # Store it
+                self.param_form.addRow(f"{param}:", param_input)
+
     def load_image(self):
-        """Load an image file."""
         file_path, _ = QFileDialog.getOpenFileName(self, 'Open Image File', '', 'BMP Files (*.bmp)')
         if file_path:
             self.input_image = self.load_bmp_image(file_path)
             self.display_image(self.input_image, self.input_image_label)
 
     def load_bmp_image(self, file_path):
-        """Load an image and convert it to an RGB numpy array."""
         image = Image.open(file_path).convert('RGB')
         return np.array(image)
 
     def display_image(self, image_array, label):
-        """Display a numpy image array on a ZoomableLabel."""
         height, width, _ = image_array.shape
         qimage = QImage(image_array.data, width, height, 3 * width, QImage.Format_RGB888)
         pixmap = QPixmap.fromImage(qimage)
         label.set_pixmap(pixmap)
 
-    def update_channel_parameters(self):
-        """Update the input field placeholder based on selected channel."""
-        if self.channel_select.currentText() == 'BSC':
-            self.param_input.setPlaceholderText('Enter BER (e.g., 0.1)')
-        else:
-            self.param_input.setPlaceholderText('Enter Gilbert-Elliott params (p_bad, p_good, e_good, e_bad)')
 
     def transmit_and_decode(self):
         """Simulate transmission with FEC correction."""
         coding_type = 1 if self.coding_select.currentText() == 'Hamming' else 2
         channel_model = 1 if self.channel_select.currentText() == 'BSC' else 2
 
-        params = self.param_input.text()
+        # Retrieve parameters from input fields
         if channel_model == 1:  # BSC
-            ber = float(params)
-            channel_params = ber
+            try:
+                ber = float(self.param_inputs['BER'].text())
+                channel_params = ber
+            except ValueError:
+                print("Invalid BER value!")
+                return
         else:  # Gilbert-Elliott
             try:
-                params = [float(x) for x in params.split(',')]
+                params = [float(self.param_inputs[param].text()) for param in ['p_bad', 'p_good', 'e_good', 'e_bad']]
                 channel_params = tuple(params)
             except ValueError:
-                print("Invalid Gilbert-Elliott parameters")
+                print("Invalid Gilbert-Elliott parameters!")
                 return
 
         # Step 1: Encode the input image into bits
