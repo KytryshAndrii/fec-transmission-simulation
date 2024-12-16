@@ -1,10 +1,12 @@
 import numpy as np
+
+
 class GilbertElliottChannel:
     def __init__(self, chance_for_bad, chance_for_good, p_err_good, p_err_bad):
         self.chance_for_bad = chance_for_bad  # Przejście z dobrego do złego (szansa od 0.0 do 1.0)
-        self. chance_for_good=  chance_for_good  # Przejście ze złego do dobrego (szansa od 0.0 do 1.0)
+        self.chance_for_good = chance_for_good  # Przejście ze złego do dobrego (szansa od 0.0 do 1.0)
         self.p_err_good = p_err_good  # BER w stanie dobrym (szansa od 0.0 do 1.0)
-        self.p_err_bad = p_err_bad    # BER w stanie złym (szansa od 0.0 do 1.0)
+        self.p_err_bad = p_err_bad  # BER w stanie złym (szansa od 0.0 do 1.0)
         self.state = 0  # 0 - dobry, 1 - zły
 
     def transmitHamming(self, bitsarray):
@@ -32,14 +34,14 @@ class GilbertElliottChannel:
             receivedArray.append(received)
             errorstemp = []
             for error in errors:
-                if (error==True):
+                if (error == True):
                     errorstemp.append(1)
                 else:
                     errorstemp.append(0)
 
             errorsArray.append(errorstemp)
         return receivedArray, errorsArray
-    
+
     def transmitConvolutional(self, bitsarray):
         receivedArray = []
         errorsArray = []
@@ -65,7 +67,7 @@ class GilbertElliottChannel:
             receivedArray.append(received)
             errorstemp = []
             for error in errors:
-                if (error==True):
+                if (error == True):
                     errorstemp.append(1)
                 else:
                     errorstemp.append(0)

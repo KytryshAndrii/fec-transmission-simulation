@@ -82,4 +82,3 @@ class Hamming:
         for i,array in enumerate(slowoCoded):
             slowoDecoded.append(Hamming.__hamming_decode(array,i+1))
         return slowoDecoded
-

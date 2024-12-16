@@ -8,7 +8,7 @@ from Utils.HelperFunctions import SlowoNaTablice, decode_bits_to_string
 class ConvolutionalCoder:
     K = 3  # Constraint length
     code_rate = (1, K)  # Rate 1/K
-    generators = np.array([[5, 7]])
+    generators = np.array([[5,7]])
     trellis = Trellis(np.array([K]), generators)
 
     @staticmethod

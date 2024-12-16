@@ -142,10 +142,9 @@ class TransmissionSimulator(QWidget):
 
     def create_input_fields(self):
         """Initialize input fields for BER and Gilbert-Elliott parameters."""
-        self.param_inputs = {}  # Clear existing inputs
-        for name in ['BER', 'p_bad', 'p_good', 'e_good', 'e_bad']:
-            input_field = QLineEdit()
-            self.param_inputs[name] = input_field
+        ber_input = QLineEdit()  # Create a new QLineEdit for BER
+        self.param_inputs['BER'] = ber_input  # Store it
+        self.param_form.addRow("BER:", ber_input)
 
     def update_input_fields(self):
         """Update input fields based on the selected channel."""
@@ -157,12 +156,18 @@ class TransmissionSimulator(QWidget):
         if self.channel_select.currentText() == 'BSC':
             ber_input = QLineEdit()  # Create a new QLineEdit for BER
             self.param_inputs['BER'] = ber_input  # Store it
-            self.param_form.addRow("BER:", ber_input)
+            self.param_form.addRow("Bit Error Rate (BER):", ber_input)
         else:  # Gilbert-Elliott
-            for param in ['p_bad', 'p_good', 'e_good', 'e_bad']:
-                param_input = QLineEdit()  # Create a new QLineEdit for each parameter
-                self.param_inputs[param] = param_input  # Store it
-                self.param_form.addRow(f"{param}:", param_input)
+            self.param_inputs['chance_for_bad'] = QLineEdit()
+            self.param_inputs['chance_for_good'] = QLineEdit()
+            self.param_inputs['p_err_good'] = QLineEdit()
+            self.param_inputs['p_err_bad'] = QLineEdit()
+
+            # Add input fields with descriptive labels
+            self.param_form.addRow("Chance for Bad State (p):", self.param_inputs['chance_for_bad'])
+            self.param_form.addRow("Chance for Good State (r):", self.param_inputs['chance_for_good'])
+            self.param_form.addRow("Error Probability in Good State (1-k):", self.param_inputs['p_err_good'])
+            self.param_form.addRow("Error Probability in Bad State (1-h):", self.param_inputs['p_err_bad'])
 
     def load_image(self):
         file_path, _ = QFileDialog.getOpenFileName(self, 'Open Image File', '', 'BMP Files (*.bmp)')
@@ -180,13 +185,11 @@ class TransmissionSimulator(QWidget):
         pixmap = QPixmap.fromImage(qimage)
         label.set_pixmap(pixmap)
 
-
     def transmit_and_decode(self):
         """Simulate transmission with FEC correction."""
         coding_type = 1 if self.coding_select.currentText() == 'Hamming' else 2
         channel_model = 1 if self.channel_select.currentText() == 'BSC' else 2
 
-        # Retrieve parameters from input fields
         if channel_model == 1:  # BSC
             try:
                 ber = float(self.param_inputs['BER'].text())
@@ -196,43 +199,47 @@ class TransmissionSimulator(QWidget):
                 return
         else:  # Gilbert-Elliott
             try:
-                params = [float(self.param_inputs[param].text()) for param in ['p_bad', 'p_good', 'e_good', 'e_bad']]
+                params = [
+                    float(self.param_inputs['chance_for_bad'].text()),  # p
+                    float(self.param_inputs['chance_for_good'].text()),  # r
+                    float(self.param_inputs['p_err_good'].text()),  # 1-k
+                    float(self.param_inputs['p_err_bad'].text())  # 1-h
+                ]
                 channel_params = tuple(params)
             except ValueError:
                 print("Invalid Gilbert-Elliott parameters!")
                 return
 
-        # Step 1: Encode the input image into bits
         original_bits = self.image_to_bits(self.input_image)
-        original_bit_count = original_bits.size  # Track the original number of bits
+        original_bit_count = original_bits.size
 
-        # Encode using the selected FEC method
         if coding_type == 1:
             encoded_data = Hamming.CodeDataHammingObraz(original_bits)
         else:
             encoded_data = ConvolutionalCoder.CodeData(slowo=original_bits, JestObrazem=True)
 
-        # Step 2: Transmit through the selected channel
-        if channel_model == 1:
-            noisy_data, _ = bsc_channel_transmission_hamming(encoded_data, channel_params)
-        else:
+        if channel_model == 1:  # BSC
+            if coding_type == 1:
+                transmitted_data, _, _ = bsc_channel_transmission_hamming(encoded_data, channel_params)
+            else:
+                transmitted_data, _, _ = bsc_channel_transmission_splot(encoded_data, channel_params)
+        else:  # Gilbert-Elliott
             channel = GilbertElliottChannel(*channel_params)
-            noisy_data = channel.transmitHamming(encoded_data)
+            if coding_type == 1:
+                transmitted_data = channel.transmitHamming(encoded_data)
+            else:
+                transmitted_data = channel.transmitConvolutional(encoded_data)
 
-        noisy_non_decoded_bits = np.array(noisy_data).flatten()[:original_bit_count]
+        noisy_non_decoded_bits = np.array(transmitted_data).flatten()[:original_bit_count]
         noisy_non_decoded_image = self.bits_to_image(noisy_non_decoded_bits, self.input_image.shape)
         self.display_image(noisy_non_decoded_image, self.noisy_image_label)
 
-        # Step 3: Decode the received data using the selected FEC method
         if coding_type == 1:
-            decoded_bits = Hamming.DecodeInputDataHammingObraz(noisy_data)
+            decoded_bits = Hamming.DecodeInputDataHammingObraz(transmitted_data)
         else:
-            decoded_bits = ConvolutionalCoder.Decode(noisy_data, tb_depth=3, czySlowo=False, JestObrazem=True)
+            decoded_bits = ConvolutionalCoder.Decode(transmitted_data, tb_depth=3, czySlowo=False, JestObrazem=True)
 
-        # Ensure decoded bits are trimmed to the original size
         decoded_bits = np.array(decoded_bits).flatten()[:original_bit_count]
-
-        # Convert the decoded bits back to an image
         decoded_image = self.bits_to_image(decoded_bits, self.input_image.shape)
         self.display_image(decoded_image, self.decoded_image_label)
         overlay_image = self.generate_overlay_image(self.input_image, decoded_image)

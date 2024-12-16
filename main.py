@@ -88,7 +88,7 @@ def process_text_data(input_data, coding_type, channel_model, channel_params):
     encoded_data = encode_data(input_data, coding_type)
 
     if channel_model == 1:  # BSC
-        transmitted_data, _ = transmit_bsc(encoded_data, channel_params, coding_type)
+        transmitted_data, _, actual_ber_observed = transmit_bsc(encoded_data, channel_params, coding_type)
     elif channel_model == 2:  # Gilbert-Elliott
         transmitted_data, _ = transmit_gilbert_elliott(encoded_data, channel_params, coding_type)
     else:
@@ -165,6 +165,7 @@ def main():
         print("Decoded Text Data:")
         print(decoded_data)
 
+
     elif data_type == 2:  # Image data
         image = load_bmp_image("image.bmp")
         decoded_image = process_image_data(image, coding_type, channel_model, channel_params)
@@ -175,8 +176,9 @@ def main():
         print("Invalid data type selected")
         return
 
+
     elapsed_time = time.time() - start_time
-    print(f"Elapsed time: {elapsed_time:.2f} seconds")
+    print(f"\nElapsed time: {elapsed_time:.2f} seconds")
 
 
 if __name__ == '__main__':
