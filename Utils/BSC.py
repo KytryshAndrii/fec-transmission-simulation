@@ -28,10 +28,7 @@ def bsc_channel_transmission_hamming(bit_list, ber):
         received_list.append(received_bits)
         error_list.append(error_bits)
 
-    actual_ber_observed = error_count / total_bits
-    print(f"Actual BER observed: {error_count / total_bits:.3f}")  # Compare to target BER
-
-    return received_list, error_count, actual_ber_observed
+    return received_list, error_list
 
 
 def bsc_channel_transmission_splot(bit_list, ber):
@@ -55,8 +52,7 @@ def bsc_channel_transmission_splot(bit_list, ber):
         received_list.append(int(received_bit))  # Convert to int
         error_list.append(int(error))  # 1 indicates error, 0 no error
 
-    actual_ber_observed = error_count / total_bits
     # Print the observed BER
     print(f"Actual BER observed: {error_count / total_bits:.3f}")  # Compare to target BER
 
-    return received_list, error_count, actual_ber_observed
+    return received_list, error_list
