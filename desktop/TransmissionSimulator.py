@@ -2,12 +2,14 @@ import sys
 import numpy as np
 from PIL import Image
 import multiprocessing as mp
-from zoomable_label import ZoomableLabel
+
 from PySide6.QtGui import QPixmap, QImage
 from desktop.ImageProcessingFunctions import encode_data, image_to_bits, bits_to_image, generate_overlay_image
 from PySide6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout,
                                QComboBox, QFileDialog, QLineEdit, QFormLayout)
-from ImageProcessingFunctions import split_image, transmit_bsc, transmit_gilbert_elliott, decode_image_part, merge_image
+from desktop.ImageProcessingFunctions import split_image, transmit_bsc, transmit_gilbert_elliott, decode_image_part, merge_image
+from desktop.zoomable_label import ZoomableLabel
+
 
 class TransmissionSimulator(QWidget):
     def __init__(self):
@@ -204,10 +206,3 @@ class TransmissionSimulator(QWidget):
                 self.display_image(overlay_image, self.additional_image_label)
         except Exception as e:
             print(f"Error during transmission and decoding: {e}")
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    simulator = TransmissionSimulator()
-    simulator.show()
-    sys.exit(app.exec())
