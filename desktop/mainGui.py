@@ -4,7 +4,7 @@ from PIL import Image
 import multiprocessing as mp
 from zoomable_label import ZoomableLabel
 from PySide6.QtGui import QPixmap, QImage
-from desktop.ImageProcessingFunctions import encode_data, image_to_bits, bits_to_image
+from desktop.ImageProcessingFunctions import encode_data, image_to_bits, bits_to_image, generate_overlay_image
 from PySide6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout,
                                QComboBox, QFileDialog, QLineEdit, QFormLayout)
 from ImageProcessingFunctions import split_image, transmit_bsc, transmit_gilbert_elliott, decode_image_part, merge_image
@@ -178,12 +178,12 @@ class TransmissionSimulator(QWidget):
 
                 for encoded_data in encoded_parts:
                     if channel_model == 1:  # BSC
-                        transmitted_data, _ = transmit_bsc(encoded_data, channel_params, coding_type,)
+                        transmitted_data, errorList = transmit_bsc(encoded_data, channel_params, coding_type,)
                     elif channel_model == 2:  # Gilbert-Elliott
-                        transmitted_data, _ = transmit_gilbert_elliott(encoded_data, channel_params, coding_type)
+                        transmitted_data, errorList = transmit_gilbert_elliott(encoded_data, channel_params, coding_type)
                     else:
                         raise ValueError("Invalid channel model selected")
-
+                    print(errorList)
                     transmitted_parts.append(transmitted_data)
 
                 noisy_non_decoded_bits = np.array(transmitted_parts).flatten()[:original_bit_count]
@@ -200,15 +200,10 @@ class TransmissionSimulator(QWidget):
                 final_image = merge_image(decoded_parts)
 
                 self.display_image(final_image, self.decoded_image_label)
-                overlay_image = self.generate_overlay_image(self.input_image, final_image)
+                overlay_image = generate_overlay_image(self.input_image, final_image)
                 self.display_image(overlay_image, self.additional_image_label)
         except Exception as e:
             print(f"Error during transmission and decoding: {e}")
-
-    def generate_overlay_image(self, input_image, output_image):
-        """Overlay two images to highlight differences."""
-        diff = np.abs(input_image - output_image)
-        return diff.astype(np.uint8)
 
 
 if __name__ == '__main__':

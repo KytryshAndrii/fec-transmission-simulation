@@ -1,13 +1,7 @@
-import multiprocessing as mp
 from Utils.Hamming import *
 from Utils.Convolutional import *
 from Utils.BSC import *
 from Utils.GilbertElliot import *
-
-def save_bmp_image(data, file_path, original_shape):
-    """Save a numpy array as a BMP image."""
-    image = Image.fromarray(data.reshape(original_shape).astype(np.uint8))
-    image.save(file_path)
 
 def bits_to_image(bits, shape):
     """Convert bit array back to image data."""
@@ -27,6 +21,11 @@ def split_image(image, parts=4):
 def merge_image(parts):
     """Merge split image parts back into a single image."""
     return np.vstack(parts)
+
+def generate_overlay_image(input_image, output_image):
+    """Overlay two images to highlight differences."""
+    diff = np.abs(input_image - output_image)
+    return diff.astype(np.uint8)
 
 def transmit_bsc(data, ber, coding_type):
     if coding_type == 1:  # Hamming
@@ -50,7 +49,7 @@ def encode_data(data, coding_type,):
     if coding_type == 1:  # Hamming
         return Hamming.CodeDataHammingObraz(data)
     elif coding_type == 2:  # Convolutional
-        return ConvolutionalCoder.CodeData(slowo=data, JestObrazem=True)
+        return ConvolutionalCoder.CodeData(word=data, isPicture=True)
     else:
         raise ValueError("Invalid coding type selected")
 

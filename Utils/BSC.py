@@ -28,6 +28,8 @@ def bsc_channel_transmission_hamming(bit_list, ber):
         received_list.append(received_bits)
         error_list.append(error_bits)
 
+    print(f"Actual BER observed: {error_count / total_bits:.3f}")  # Compare to target BER
+
     return received_list, error_list
 
 

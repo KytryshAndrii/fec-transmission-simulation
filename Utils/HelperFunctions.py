@@ -1,5 +1,5 @@
-#zamienia dany char na bity
-def CharNaBit(char):
+# Converts a given char into bits
+def char_to_bit(char):
     # Step 1: Get the ASCII value of the character
     ascii_value = ord(char)
 
@@ -14,14 +14,15 @@ def CharNaBit(char):
     bits_array = [int(bit) for bit in padded_binary_string]
 
     return bits_array
-#zamienia slowo na tablice ktora sklada sie z tablic majacych w sobie 8 bitow ktore tworza znak (char)
-def SlowoNaTablice(slowo):
-    slowotemp = []
-    for litera in slowo:
-        slowotemp.append(CharNaBit(litera))
-    return slowotemp
 
-# zamienia 1D tablice bitów na słowo (używamy w convolutionalu)
+# Converts a word into an array that consists of arrays of 8 bits that form a character (char)
+def word_to_list(word):
+    tempWord = []
+    for letter in word:
+        tempWord.append(char_to_bit(letter))
+    return tempWord
+
+# Converts 1D arrays of bits into a word (used in convolutional)
 def decode_bits_to_string(bit_array):
     # Ensure the array length is a multiple of 8
     if len(bit_array) % 8 != 0:
@@ -43,7 +44,7 @@ def decode_bits_to_string(bit_array):
     # Join all characters to form the final decoded word
     return ''.join(characters)
 
-#jak mamy np tablice z funkcji slowo na tablice to tą funkcja mozemy rozbić każdą podtablice na 2 tablice skladajace sie z 4 bitow
+# If we have, for example, an array from the word function into arrays, we can use this function to split each sub-array into 2 arrays of 4 bits
 def split_array_of_8_to_4(bits_array):
     # Check if the input array has exactly 8 bits
     if len(bits_array) != 8:
@@ -55,26 +56,26 @@ def split_array_of_8_to_4(bits_array):
 
     return first_half, second_half
 
-# Łączy dwie tablice 4-bitowe w jedną tablicę 8-bitową
+# Merges two 4-bit arrays into one 8-bit array
 def join_4_bit_arrays(array1, array2):
-    return array1 + array2  # Łączymy tablice w jedną
+    return array1 + array2
 
-# Zamienia tablicę bitów na znak
+# Converts an array of bits into a character
 def bits_to_char(bits):
-    byte_str = ''.join(str(bit) for bit in bits)  # Konwertuje tablicę bitów na string
-    return chr(int(byte_str, 2))  # Konwertuje string binarny na znak
+    byte_str = ''.join(str(bit) for bit in bits)
+    return chr(int(byte_str, 2))
 
 """
-Jeżeli mamy tak jak niżej słowo hej (przykładowe, te tablice nie oznaczają hej)
+If we have as below the word hey (example, these arrays do not mean hey)
 [0,1,1,1,0,0,0,1],[0,0,0,0,1,1,1,1],[0,0,1,1,0,0,1,1]
-to funkcja rozbija je na mniejsze arraye czyli
+then the function breaks them into smaller arrays, i.e.
 [0,1,1,1],[0,0,0,1],[0,0,0,0],[1,1,1,1],[0,0,1,1],[0,0,1,1]
 """
-def RozbijSlowoNa4BitoweArraye(slowo):
+def SplitWordTo4BitsArrays(slowo):
     listabit = []
     for l in slowo:
-        tablica = CharNaBit(l)
-        firsthalf,secondhalf = split_array_of_8_to_4(tablica)
+        table = char_to_bit(l)
+        firsthalf,secondhalf = split_array_of_8_to_4(table)
         listabit.append(firsthalf)
         listabit.append(secondhalf)
     return listabit
@@ -82,74 +83,24 @@ def RozbijSlowoNa4BitoweArraye(slowo):
 def splitIntoChunks(array, chunk_size):
     return [array[i:i + chunk_size] for i in range(0, len(array), chunk_size)]
 
-# Funkcja do łączenia 4-bitowych tablic z powrotem w słowo
+
 """
-zamienia array typu
+Function for concatenating 4-bit arrays back into a word
+substitutes an array of type
 [0,1,1,1],[0,0,0,1],[0,0,0,0],[1,1,1,1],[0,0,1,1],[0,0,1,1]
 {                 } {                  }{                 }
          H                     E                 J
-w słowo (przykładowe te tablice w ascii nie oznaczają słowa hej
+in the word (example these arrays in ascii do not mean the word hey)
 """
-def Zlacz4BitoweArrayeNaSlowo(array):
+def Connect4BitsArraysToWord(array):
     if len(array) % 2 != 0:
         raise ValueError("Tablica musi mieć parzystą liczbę elementów")
 
-    slowo = ""
+    word = ""
     for i in range(0, len(array), 2):
         array1 = array[i]
         array2 = array[i + 1]
-        polaczona_tablica = join_4_bit_arrays(array1, array2)
-        znak = bits_to_char(polaczona_tablica)
-        slowo += znak
-    return slowo
-
-
-"""
-ZŁaczy 8 bitowe array w slowo np
-[0,1,1,1,0,0,0,1],[0,0,0,0,1,1,1,1],[0,0,1,1,0,0,1,1] zamienia na hej
-DANE ZMYSLILEM TAK NAPRAWDE TE 3 TABLICE NIE OZNACZAJĄ HEJ W ASCII
-"""
-"""
-def Zlacz8BitoweArrayeNaSlowo(array):
-    tablicachar = []
-
-    for subarray in array:
-        result = 0
-        for bit in subarray:
-            result = (result << 1) | bit  # Przesunięcie bitowe i dodanie bitu
-        char = chr(result)  # Zamiana liczby na znak
-        tablicachar.append(char)
-
-    slowo = ''.join(tablicachar)  # Łączenie znaków w słowo
-    return slowo
-"""
-
-
-def split_into_four_parts(lst):
-    """
-    Splits a list into four roughly equal parts.
-
-    Parameters:
-        lst (list): The list to split.
-
-    Returns:
-        list of lists: A list containing four sublists.
-    """
-    # Determine the size of each part
-    n = len(lst)
-    part_size = n // 4
-    remainder = n % 4
-
-    # Distribute remainder across the first few parts if needed
-    parts = []
-    start = 0
-    for i in range(4):
-        extra = 1 if i < remainder else 0
-        end = start + part_size + extra
-        parts.append(lst[start:end])
-        start = end
-
-    return parts
-
-
-
+        connected_table = join_4_bit_arrays(array1, array2)
+        sign = bits_to_char(connected_table)
+        word += sign
+    return word
