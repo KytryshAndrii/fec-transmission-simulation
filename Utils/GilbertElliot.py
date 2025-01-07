@@ -54,8 +54,11 @@ class GilbertElliottChannel:
                     errorstemp.append(1)
                 else:
                     errorstemp.append(0)
-
             errorsArray.append(errorstemp)
+
+        errorsArray = np.array(errorsArray) #glupi trik na splaszczenie tablicy
+        errorsArray.flatten()
+        errorsArray = errorsArray.tolist()
         return receivedArray, errorsArray
 
     def transmitConvolutional(self, bitsarray):
@@ -97,4 +100,7 @@ class GilbertElliottChannel:
                     errorstemp.append(0)
 
             errorsArray.append(errorstemp)
+        errorsArray = np.array(errorsArray) #glupi trik na splaszczenie tablicy
+        errorsArray.flatten()
+        errorsArray = errorsArray.tolist()
         return receivedArray, errorsArray

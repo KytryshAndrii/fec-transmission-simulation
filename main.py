@@ -2,6 +2,7 @@ from Utils.BSC import *
 from Utils.GilbertElliot import *
 from Utils.Hamming import *
 from Utils.Convolutional import *
+from Utils.HelperFunctions import *
 
 def main():
 
@@ -26,18 +27,19 @@ def main():
             inputDataCodedAndNoise, errorList = bsc_channel_transmission_hamming(inputDataCoded, ber)
             print(inputDataCodedAndNoise)
             print(errorList)
+            print("num errors = " + str(getNumErrorsFromErrorListTwoDimensional(errorList)) + " Total data = " + str(len(inputDataCodedAndNoise)))
             inputDataDecoded = Hamming.DecodeInputDataHamming(inputDataCodedAndNoise, True)
             print(inputDataDecoded)
 
         elif codingType == 2:
             inputDataCodedAndNoise, errorList = bsc_channel_transmission_splot(inputDataCoded, ber)
             inputDataDecoded = ConvolutionalCoder.Decode(inputDataCodedAndNoise, 10, True, False)
+            print(inputDataCodedAndNoise)
             print(inputDataDecoded)
             print(errorList)
+            print("num errors = " + str(getNumErrorsFromErrorListOneDimensional(errorList)) + " Total data = " + str(len(inputDataCodedAndNoise)))
 
         else: print("Invalid input")
-
-
     elif channelModel == 2:
         chanceForGood = float(input("Enter the chance for good: "))
         chanceForBad = float(input("Enter the chance for bad: "))
@@ -49,6 +51,7 @@ def main():
             inputDataCodedAndNoise, errorList = channel.transmitHamming(inputDataCoded)
             print(inputDataCodedAndNoise)
             print(errorList)
+            print("num errors = " + str(getNumErrorsFromErrorListTwoDimensional(errorList)) + " Total data = " + str(len(inputDataCodedAndNoise)))
             inputDataDecoded = Hamming.DecodeInputDataHamming(inputDataCodedAndNoise, True)
             print(inputDataDecoded)
 
@@ -57,6 +60,7 @@ def main():
             inputDataCodedAndNoise, errorList = channel.transmitConvolutional(inputDataCoded)
             print(inputDataCodedAndNoise)
             print(errorList)
+            print("num errors = " + str(getNumErrorsFromErrorListTwoDimensional(errorList)) + " Total data = " + str(len(inputDataCodedAndNoise)))
             inputDataDecoded = ConvolutionalCoder.Decode(inputDataCodedAndNoise, 10, True, False)
             print(inputDataDecoded)
 

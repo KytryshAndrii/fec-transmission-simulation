@@ -3,6 +3,8 @@ from Utils.HelperFunctions import SplitWordTo4BitsArrays, Connect4BitsArraysToWo
 #hamming 7-4
 class Hamming:
     # BITS PARITY CALCULATOR
+
+    numPacksCorrected = 0
     @staticmethod
     def __calculate_parity_bits(data):
         """
@@ -62,6 +64,7 @@ class Hamming:
         if error_position != 0:
             print(f"Error detected bit pack {bitpacknumber}, at position {error_position}, correcting...")
             encoded_data[error_position - 1] ^= 1  # Flip the erroneous bit
+            Hamming.numPacksCorrected += 1
 
         # Return the corrected data bits
         return [encoded_data[2], encoded_data[4], encoded_data[5], encoded_data[6]]
@@ -124,3 +127,8 @@ class Hamming:
         for i,array in enumerate(wordCoded):
             decodedWord.append(Hamming.__hamming_decode(array,i+1))
         return decodedWord
+
+    def ClearNumCorrectedPacks(self):
+        Hamming.numPacksCorrected = 0
+    def PrintNumCorrectedPacks(self):
+        print(Hamming.numPacksCorrected)

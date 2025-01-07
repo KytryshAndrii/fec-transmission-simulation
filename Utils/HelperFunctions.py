@@ -104,3 +104,17 @@ def Connect4BitsArraysToWord(array):
         sign = bits_to_char(connected_table)
         word += sign
     return word
+
+def getNumErrorsFromErrorListTwoDimensional(list):
+    numerrors = 0
+    for i in list:
+        for j in i:
+            if j == 1:
+                numerrors += 1
+    return numerrors
+def getNumErrorsFromErrorListOneDimensional(list):
+    numerrors = 0
+    for i in list:
+        if i == 1:
+            numerrors += 1
+    return numerrors

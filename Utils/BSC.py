@@ -1,5 +1,5 @@
 import random
-
+import numpy as np
 def bsc_channel_transmission_hamming(bit_list, ber):
     """
     Simulate transmission through a BSC channel for each sublist of bits in the list.
@@ -29,7 +29,9 @@ def bsc_channel_transmission_hamming(bit_list, ber):
         error_list.append(error_bits)
 
     print(f"Actual BER observed: {error_count / total_bits:.3f}")  # Compare to target BER
-
+    error_list = np.array(error_list)  # glupi trik na splaszczenie tablicy
+    error_list.flatten()
+    error_list = error_list.tolist()
     return received_list, error_list
 
 
@@ -57,4 +59,7 @@ def bsc_channel_transmission_splot(bit_list, ber):
     # Print the observed BER
     print(f"Actual BER observed: {error_count / total_bits:.3f}")  # Compare to target BER
 
+    error_list = np.array(error_list)  # glupi trik na splaszczenie tablicy
+    error_list.flatten()
+    error_list = error_list.tolist()
     return received_list, error_list
