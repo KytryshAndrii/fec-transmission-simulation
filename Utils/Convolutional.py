@@ -17,6 +17,7 @@ class ConvolutionalCoder:
         """
         data_bits = np.array(data_bits).flatten()
         encoded_bits = conv_encode(data_bits, ConvolutionalCoder.trellis)
+        print(len(encoded_bits.tolist()))
         return encoded_bits.tolist()
 
     @staticmethod

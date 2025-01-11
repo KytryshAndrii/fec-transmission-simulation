@@ -15,6 +15,7 @@ def main():
 
     elif codingType == 2:
         inputDataCoded = ConvolutionalCoder.CodeData(inputData, False)
+        print(inputDataCoded)
         print(inputData)
 
     else: print("Invalid input")

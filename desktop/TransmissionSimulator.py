@@ -185,7 +185,7 @@ class TransmissionSimulator(QWidget):
                         transmitted_data, errorList = transmit_gilbert_elliott(encoded_data, channel_params, coding_type)
                     else:
                         raise ValueError("Invalid channel model selected")
-                    print(errorList)
+                    # print(errorList)
                     transmitted_parts.append(transmitted_data)
 
                 noisy_non_decoded_bits = np.array(transmitted_parts).flatten()[:original_bit_count]
