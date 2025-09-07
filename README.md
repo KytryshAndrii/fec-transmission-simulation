@@ -25,7 +25,7 @@ The project includes:
 FEC encodes data with redundancy, allowing detection and correction of errors **without retransmission**.  
 General model:
 
-![Transmission model](./Readmephotos/model.png)
+![Transmission model](./ReadmePhotos/model.png)
 
 ### Hamming Code
 - Adds parity bits at power-of-two positions (1, 2, 4, 8, …).  
@@ -34,7 +34,7 @@ General model:
 
 Example encoding scheme:
 
-![Hamming encoding](./Readmephotos/hamming_encode.png)
+![Hamming encoding](./ReadmePhotos/hamming_encode.png)
 
 ### Convolutional Codes
 - Encode data sequentially using a **shift register** and linear combinations of current and previous bits.  
@@ -43,7 +43,7 @@ Example encoding scheme:
 
 Implementation snippet:
 
-![Convolutional encoding](./Readmephotos/conv_encode.png)  
+![Convolutional encoding](./ReadmePhotos/conv_encode.png)  
 
 ---
 
@@ -53,14 +53,14 @@ Implementation snippet:
 - Each bit flips with fixed probability `p` (BER).  
 - Models **independent random errors**.  
 
-![BSC model](./Readmephotos/BSC.png)
+![BSC model](./ReadmePhotos/BSC.png)
 
 ### Gilbert–Elliott Channel
 - Two states: **Good (G)** and **Bad (B)**.  
 - Errors occur with low probability in state G, high probability in state B.  
 - Models **burst/grouped errors**.  
 
-![Gilbert–Elliott model](./Readmephotos/Gilbert-Elliot.png)
+![Gilbert–Elliott model](./ReadmePhotos/Gilbert-Elliot.png)
 
 ---
 
@@ -72,29 +72,29 @@ We tested transmission of `Lorem Ipsum` text (245 characters) encoded with **Ham
 - Errors corrected successfully at **low BER**.  
 - Multiple errors in one block cannot be corrected.  
 
-![Hamming example](./Readmephotos/hamming_working_example_1.png)  
-![Group errors](./Readmephotos/hamming_working_example_group_error_1.png)
+![Hamming example](./ReadmePhotos/hamming_working_example_1.png)  
+![Group errors](./ReadmePhotos/hamming_working_example_group_error_1.png)
 
 ### Example – Convolutional over Gilbert–Elliott
 - Performs well in channels with burst errors.  
 - With poor channel parameters, some errors remain uncorrected.  
 
-![Convolutional example](./Readmephotos/conv_working_example_1.png)
+![Convolutional example](./ReadmePhotos/conv_working_example_1.png)
 
 ### Measured Data – Hamming over BSC
 Sample test output table:
 
-![Hamming data](./Readmephotos/Hamming_BSC_data.png)
+![Hamming data](./ReadmePhotos/Hamming_BSC_data.png)
 
 Relation of **different characters vs BER**:
 
-![Hamming BER test](./Readmephotos/Hamming_BSC_TEST1.png)
+![Hamming BER test](./ReadmePhotos/Hamming_BSC_TEST1.png)
 
 ### Measured Data – Convolutional over BSC
 Sample table and BER relation:
 
-![Convolutional data](./Readmephotos/CONVOLUTIONAL_BSC_TABLE_Example.png)  
-![Conv BER test](./Readmephotos/CONVOLUTIONAL_BSC_TEST1.png)
+![Convolutional data](./ReadmePhotos/CONVOLUTIONAL_BSC_TABLE_Example.png)  
+![Conv BER test](./ReadmePhotos/CONVOLUTIONAL_BSC_TEST1.png)
 
 ---
 
@@ -108,7 +108,7 @@ Users can:
 - Visualize noise, corrected output, and pixel differences  
 
 ### Example GUI Window
-![GUI main window](./Readmephotos/GUI_MAIN.png)
+![GUI main window](./ReadmePhotos/GUI_MAIN.png)
 
 ### Example Transmission (Image)
 - Top-left: Original image  
@@ -118,11 +118,11 @@ Users can:
 
 Hamming over channels:
 
-![Hamming image test](./Readmephotos/HAMMING-L-BSC-R-GILELIT.png)  
+![Hamming image test](./ReadmePhotos/HAMMING-L-BSC-R-GILELIT.png)  
 
 Convolutional over channels:
 
-![Conv image test](./Readmephotos/CONVOLUTIONAL-L-BSC-R-GILELIT.png)  
+![Conv image test](./ReadmePhotos/CONVOLUTIONAL-L-BSC-R-GILELIT.png)  
 
 ---
 
